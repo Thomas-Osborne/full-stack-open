@@ -1,6 +1,8 @@
 const express = require('express');
+const bodyParser = require('body-parser');
 
 const app = express();
+app.use(bodyParser.json());
 
 let persons = [
     { 
@@ -39,6 +41,15 @@ app.get('/api/persons/:id', (req, res) => {
     res.json(person)
 })
 
+app.post('/api/persons', (req, res) => {
+    const randomId = Math.floor(Math.random() * 100000);
+    const person = {name: req.body.name, number: req.body.number, id: randomId};
+    
+    persons = persons.concat(person);
+
+    res.json(person);
+})
+
 app.delete('/api/persons/:id', (req, res) => {
     const id = parseInt(req.params.id);
     console.log(id);
@@ -46,7 +57,6 @@ app.delete('/api/persons/:id', (req, res) => {
 
     res.status(204).end()
 })
-
 
 app.get('/info', (req, res) => {
     const time = new Date();
