@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react'
-import axios from 'axios'
 import personService from '../../backend/persons'
 
 import Search from './Search';
 import Form from './Form';
 import Contacts from './Contacts';
+import Notification from './Notification';
+
 
 const App = () => {
 
@@ -20,6 +21,9 @@ const App = () => {
 
   const [newPerson, setNewPerson] = useState({name: "", number: ""})
   const [search, setSearch] = useState("");
+  
+  const [message, setMessage] = useState("");
+  const [isGood, setIsGood] = useState(true);
 
   function handleFilterChange(event) {
     setSearch(event.target.value);
@@ -45,6 +49,22 @@ const App = () => {
           .then(returnedPerson => {
             setPersons(persons.map(person => person.id !== returnedPerson.id ? person : returnedPerson))
             setNewPerson({name: "", number: ""});
+            setMessage(`Updated ${returnedPerson.name}`)
+            setIsGood(true);
+            setTimeout(() => {
+              setMessage(null)
+            }, 5000)
+          })
+          .catch(error => {
+            setPersons(persons.filter(person => person.id !== oldPerson.id))
+            setNewPerson({name: "", number: ""});
+            setMessage(
+              `Note '${persons.name}' was already removed from server`
+            )
+            setIsGood(false);
+            setTimeout(() => {
+              setMessage(null)
+            }, 5000)
           })
       }
     } else {
@@ -53,6 +73,11 @@ const App = () => {
         .then(returnedPerson => {
           setPersons(persons.concat(returnedPerson));
           setNewPerson({name: "", number: ""});
+          setMessage(`Added ${returnedPerson.name}`)
+          setIsGood(true);
+          setTimeout(() => {
+            setMessage(null)
+          }, 5000)
       })
     }
   }
@@ -62,12 +87,18 @@ const App = () => {
       personService
         .remove(deletedPerson.id)
         setPersons(persons.filter(person => person.id !== deletedPerson.id));
+        setMessage(`Deleted ${deletedPerson.name}`)
+        setIsGood(true);
+        setTimeout(() => {
+          setMessage(null)
+        }, 5000)
     }
   }
 
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message={message} isGood={isGood}/>
       <Search search={search} handleChange={handleFilterChange}/>
       <h2>add a new</h2>
       <Form newPerson={newPerson} handleChange={handleChange} handleClick={handleClick}/>
