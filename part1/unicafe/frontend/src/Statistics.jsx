@@ -10,11 +10,14 @@ export default function(props) {
             {total 
                 ? 
                     <div>
-                        <div>
+                        <table>
                             <StatisticLine text="good" value={props.good} />
                             <StatisticLine text="neutral" value={props.neutral} />
                             <StatisticLine text="bad" value={props.bad} />
-                        </div>
+                            <StatisticLine text="total" value={total} />
+                            <StatisticLine text="average" value={average} />
+                            <StatisticLine text="positive" value={`${positiveProportion * 100}%`}/>
+                        </table>
                         <div>
                             <p>all {total}</p>
                             <p>average {average}</p>
