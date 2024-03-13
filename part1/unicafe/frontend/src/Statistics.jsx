@@ -1,4 +1,4 @@
-import Entry from './Entry';
+import StatisticLine from './StatisticLine';
 
 export default function(props) {
     const total = props.good + props.neutral + props.bad;
@@ -11,9 +11,9 @@ export default function(props) {
                 ? 
                     <div>
                         <div>
-                            <Entry name="good" votes={props.good} />
-                            <Entry name="neutral" votes={props.neutral} />
-                            <Entry name="bad" votes={props.bad} />
+                            <StatisticLine text="good" value={props.good} />
+                            <StatisticLine text="neutral" value={props.neutral} />
+                            <StatisticLine text="bad" value={props.bad} />
                         </div>
                         <div>
                             <p>all {total}</p>
