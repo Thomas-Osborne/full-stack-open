@@ -38,14 +38,16 @@ const App = () => {
   function handleClick(event) {
     event.preventDefault();
     if (persons.map(person => person.name).includes(newPerson.name)) {
-      alert(`${newPerson.name} is already added to phonebook`);
+      const oldPerson = persons.filter(person => person.name === newPerson.name)[0]; // is a unique entry
+      if (confirm(`${newPerson.name} is already added to phonebook, replace the old number with a new one?`)) {
+        personService
+          .update(oldPerson.id, newPerson)
+          .then(returnedPerson => {
+            setPersons(persons.map(person => person.id !== returnedPerson.id ? person : returnedPerson))
+            setNewPerson({name: "", number: ""});
+          })
+      }
     } else {
-      setPersons(prevPersons => {
-        const newPersons = [...prevPersons];
-        newPersons.push({name: newPerson.name, number: newPerson.number});
-        return newPersons;
-      })
-
       personService
         .create(newPerson)
         .then(returnedPerson => {
@@ -55,10 +57,11 @@ const App = () => {
     }
   }
 
-  function handleDelete(person) {
-    if (window.confirm(`Delete ${person.name}?`)) {
+  function handleDelete(deletedPerson) {
+    if (window.confirm(`Delete ${deletedPerson.name}?`)) {
       personService
-        .remove(person.id);
+        .remove(deletedPerson.id)
+        setPersons(persons.filter(person => person.id !== deletedPerson.id));
     }
   }
 
