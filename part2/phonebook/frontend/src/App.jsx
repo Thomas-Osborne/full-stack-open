@@ -55,6 +55,13 @@ const App = () => {
     }
   }
 
+  function handleDelete(person) {
+    if (window.confirm(`Delete ${person.name}?`)) {
+      personService
+        .remove(person.id);
+    }
+  }
+
   return (
     <div>
       <h2>Phonebook</h2>
@@ -62,7 +69,7 @@ const App = () => {
       <h2>add a new</h2>
       <Form newPerson={newPerson} handleChange={handleChange} handleClick={handleClick}/>
       <h2>Numbers</h2>
-      <Contacts persons={persons} search={search}/>
+      <Contacts persons={persons} search={search} handleDelete={handleDelete}/>
     </div>
   )
 }
