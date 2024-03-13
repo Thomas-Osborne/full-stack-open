@@ -1,11 +1,11 @@
 import Part from './Part';
 
 export default function Content(props) {
+
+    const partComponents = props.parts.map(part => <Part part={part} />)
     return (
         <div>
-            <Part part={props.part1} />
-            <Part part={props.part2} />
-            <Part part={props.part3} />
+            {partComponents}
         </div>
     )
 }
