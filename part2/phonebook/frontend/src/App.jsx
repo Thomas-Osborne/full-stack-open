@@ -1,22 +1,25 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import axios from 'axios'
+import personService from '../../backend/persons'
 
 import Search from './Search';
 import Form from './Form';
 import Contacts from './Contacts';
 
 const App = () => {
-  const [persons, setPersons] = useState([
-    { name: 'Arto Hellas', number: '040-123456', id: 1 },
-    { name: 'Ada Lovelace', number: '39-44-5323523', id: 2 },
-    { name: 'Dan Abramov', number: '12-43-234345', id: 3 },
-    { name: 'Mary Poppendieck', number: '39-23-6423122', id: 4 }
-  ])
+
+  useEffect(() => {
+    personService
+      .getAll()
+      .then(initialPersons => {
+        setPersons(initialPersons)
+      })
+  }, [])
+
+  const [persons, setPersons] = useState([]);
 
   const [newPerson, setNewPerson] = useState({name: "", number: ""})
   const [search, setSearch] = useState("");
-
-  const numberComponents = persons.filter(person => person.name.includes(search)).map(person => <p key={person.name}>{person.name} {person.number}</p>);
 
   function handleFilterChange(event) {
     setSearch(event.target.value);
@@ -42,10 +45,12 @@ const App = () => {
         newPersons.push({name: newPerson.name, number: newPerson.number});
         return newPersons;
       })
-      axios
-      .post('http://localhost:3001/persons', newPerson)
-      .then(response => {
-        console.log(response)
+
+      personService
+        .create(newPerson)
+        .then(returnedPerson => {
+          setPersons(persons.concat(returnedPerson));
+          setNewPerson({name: "", number: ""});
       })
     }
   }
