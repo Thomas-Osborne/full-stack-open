@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import axios from 'axios'
 
 import Country from './Country';
+import CountryLine from './CountryLine';
 
 function App() {
   
@@ -26,15 +27,16 @@ function App() {
 
   function renderContent() {
     let countryComponents;
-
     if (countries) {
       const filteredCountries = countries.filter(country => country.name.common.toLowerCase().includes(search.toLowerCase()));
       if (filteredCountries.length > 10) {
         countryComponents = <p>Too many countries to render.</p>
       } else if (filteredCountries.length > 1) {
-        countryComponents = filteredCountries.map(country => <p key={country.name.official}>{country.name.common}</p>)
-      } else {
+        countryComponents = filteredCountries.map(country => <CountryLine key={country.name.official} country={country}/>)
+      } else if (filteredCountries.length == 1) {
         countryComponents = <Country country={filteredCountries[0]}/>
+      } else {
+        countryComponents = "";
       }
     } else {
       countryComponents = "";
