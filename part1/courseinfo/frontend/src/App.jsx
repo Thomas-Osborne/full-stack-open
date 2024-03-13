@@ -19,13 +19,11 @@ export default function App() {
     }
   ]
 
-  const total = parts.map(part => part.exercises).reduce((a, b) => a + b);
-
   return (
     <div>
       <Header course={course} />
       <Content parts={parts} />
-      <Total total={total} />
+      <Total parts={parts} />
     </div>
   )
 }
