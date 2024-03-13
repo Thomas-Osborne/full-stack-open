@@ -7,16 +7,25 @@ export default function(props) {
     return (
         <div>
             <h1>statistics</h1>
-            <div>
-                <Entry name="good" votes={props.good} />
-                <Entry name="neutral" votes={props.neutral} />
-                <Entry name="bad" votes={props.bad} />
-            </div>
-            <div>
-                <p>all {total}</p>
-                <p>average {average}</p>
-                <p>positive {positiveProportion * 100}%</p>
-            </div>
+            {total 
+                ? 
+                    <div>
+                        <div>
+                            <Entry name="good" votes={props.good} />
+                            <Entry name="neutral" votes={props.neutral} />
+                            <Entry name="bad" votes={props.bad} />
+                        </div>
+                        <div>
+                            <p>all {total}</p>
+                            <p>average {average}</p>
+                            <p>positive {positiveProportion * 100}%</p>
+                        </div>
+                    </div>
+                :
+                    <div>
+                        No feedback given
+                    </div>
+            }    
         </div>
     )
 }
