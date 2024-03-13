@@ -6,9 +6,7 @@ const App = () => {
   ]) 
   const [newName, setNewName] = useState('')
 
-  console.log(newName)
-
-  const numberComponents = persons.map((person, index) => <p key={index}>{person.name}</p>);
+  const numberComponents = persons.map(person => <p key={person.name}>{person.name}</p>);
 
   function handleChange(event) {
     setNewName(event.target.value);
@@ -16,13 +14,15 @@ const App = () => {
 
   function handleClick(event) {
     event.preventDefault();
-    setPersons(prevPersons => {
-      const newPersons = [...prevPersons];
-      newPersons.push({name: newName});
-      console.log(newPersons);
-      return newPersons;
-    })
-    console.log("Pressed")
+    if (persons.map(person => person.name).includes(newName)) {
+      alert(`${newName} is already added to phonebook`);
+    } else {
+      setPersons(prevPersons => {
+        const newPersons = [...prevPersons];
+        newPersons.push({name: newName});
+        return newPersons;
+      })
+    }
   }
   return (
     <div>
@@ -37,7 +37,6 @@ const App = () => {
       </form>
       <h2>Numbers</h2>
       {numberComponents}
-      <div>debug: {newName}</div>
     </div>
   )
 }
