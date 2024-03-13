@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 const App = () => {
   const anecdotes = [
@@ -15,22 +15,45 @@ const App = () => {
   const [points, setPoints] = useState([0, 0, 0, 0, 0, 0, 0, 0]);
    
   const [selected, setSelected] = useState(0)
+  const [mostPopular, setMostPopular] = useState(0);
+  function findMostVotes() {
+    let index = 0;
+    for (let i = 0; i < points.length; i++) {
+      if (points[i] > points[index]) {
+        i = index;
+      }
+      i++;
+    }
+    return index;
+  }
 
+  useEffect(() => {
+    if (points[selected] > points[mostPopular]) {
+      setMostPopular(selected);
+    }
+  }, [points]);
+  
+  function vote() {
+      setPoints(prevPoints => {
+        const newPoints = [...prevPoints];
+        newPoints[selected] += 1;
+        return newPoints;
+      });
+  }
   return (
     <div>
       <div>
+        <h1>Anecdote of the day</h1>
         {anecdotes[selected]}
         <p>has {points[selected]} votes</p>
       </div>
       <div>
+        <button onClick={() => vote()}>Vote</button>
         <button onClick={() => setSelected(Math.floor(Math.random() * anecdotes.length))}>Random Anecdote</button>
-        <button onClick={() => (
-          setPoints(prevPoints => {
-            const newPoints = [...prevPoints];
-            newPoints[selected] += 1;
-            return newPoints;
-          })
-        )}>Vote</button>
+      </div>
+      <div>
+        <h1>Anecdote with most votes</h1>
+        {anecdotes[mostPopular]}
       </div>
     </div>
   )
