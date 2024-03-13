@@ -42,6 +42,24 @@ app.get('/api/persons/:id', (req, res) => {
 })
 
 app.post('/api/persons', (req, res) => {
+    if (!req.body) {
+        return res.status(400).json({ 
+            error: 'body missing' 
+        })
+    }
+
+    if (!req.body.name || !req.body.number) {
+        return res.status(400).json({
+            error: 'need name and number'
+        })
+    }
+
+    if (persons.map(person => person.name.toLowerCase()).includes(req.body.name.toLowerCase())) {
+        return res.status(400).json({
+            error: 'name must be unique'
+        })
+    }
+
     const randomId = Math.floor(Math.random() * 100000);
     const person = {name: req.body.name, number: req.body.number, id: randomId};
     
