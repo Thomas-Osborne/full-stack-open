@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import axios from 'axios'
 
 import Search from './Search';
 import Form from './Form';
@@ -40,6 +41,11 @@ const App = () => {
         const newPersons = [...prevPersons];
         newPersons.push({name: newPerson.name, number: newPerson.number});
         return newPersons;
+      })
+      axios
+      .post('http://localhost:3001/persons', newPerson)
+      .then(response => {
+        console.log(response)
       })
     }
   }
