@@ -68,6 +68,7 @@ const App = () => {
           })
       }
     } else {
+      console.log("In the else")
       personService
         .create(newPerson)
         .then(returnedPerson => {
@@ -78,7 +79,14 @@ const App = () => {
           setTimeout(() => {
             setMessage(null)
           }, 5000)
-      })
+        })
+        .catch(error => {
+          if (error.response || error.response.data) {
+            setMessage(error.response.data.error)
+          } else {
+            setMessage("Something went wrong.")
+          }
+        });
     }
   }
 
