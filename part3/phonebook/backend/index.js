@@ -50,12 +50,20 @@ app.get('/api/persons', (req, res) => {
         .then(person => {
             res.json(person);
         })
+        .catch(error => {
+            console.error(error.message);
+            res.status(500).end();
+        })
 })
 
 app.get('/api/persons/:id', (req, res) => {
     const id = req.params.id;
     Person.findOne({ _id: id })
-        .then(person => res.json(person));
+        .then(person => res.json(person))
+        .catch(error => {
+            console.error(error.message);
+            res.status(500).end();
+        })
 })
 
 app.post('/api/persons', (req, res) => {
@@ -95,14 +103,20 @@ app.put('/api/persons/:id', (req, res) => {
     const body = req.body;
     Person.findOneAndUpdate({ _id: id }, {name: body.name, number: body.number}, {new: true}) // new means the updated document is returned 
         .then(person => res.json(person))
-        .catch(err => res.status(500).json({ error: err.message}));
+        .catch(error => {
+            console.error(error.message);
+            res.status(500).end();
+        })
 })
 
 app.delete('/api/persons/:id', (req, res) => {
     const id = req.params.id;
     Person.findOneAndDelete({ _id: id }, {name: body.name, number: body.number}, {new: true}) // new means the updated document is returned 
         .then(person => res.json(person))
-        .catch(err => res.status(500).json({ error: err.message}));
+        .catch(error => {
+            console.error(error.message);
+            res.status(500).end();
+        })
 })
 
 app.get('/info', (req, res) => {
