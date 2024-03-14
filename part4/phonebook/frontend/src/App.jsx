@@ -68,7 +68,6 @@ const App = () => {
           })
       }
     } else {
-      console.log("In the else")
       personService
         .create(newPerson)
         .then(returnedPerson => {
