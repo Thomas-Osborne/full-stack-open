@@ -106,7 +106,7 @@ app.put('/api/persons/:id', (req, res) => {
     const id = req.params.id;
     
     const body = req.body;
-    Person.findOneAndUpdate({ _id: id }, {name: body.name, number: body.number})
+    Person.findOneAndUpdate({ _id: id }, {name: body.name, number: body.number}, {new: true}) // new means the updated document is returned 
         .then(person => res.json(person))
         .catch(err => res.status(500).json({ error: err.message}));
 })
