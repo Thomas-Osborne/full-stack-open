@@ -3,6 +3,9 @@ const bodyParser = require('body-parser');
 const morgan=require('morgan');
 
 const app = express();
+
+app.use(express.static('dist'));
+
 app.use(bodyParser.json());
 
 const cors = require('cors')
