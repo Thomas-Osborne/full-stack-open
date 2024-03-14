@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import personService from '../../backend/persons'
+import personService from '../persons'
 
 import Search from './Search';
 import Form from './Form';
@@ -55,17 +55,17 @@ const App = () => {
               setMessage(null)
             }, 5000)
           })
-          // .catch(error => {
-          //   setPersons(persons.filter(person => person.id !== oldPerson.id))
-          //   setNewPerson({name: "", number: ""});
-          //   setMessage(
-          //     `Note '${persons.name}' was already removed from server`
-          //   )
-          //   setIsGood(false);
-          //   setTimeout(() => {
-          //     setMessage(null)
-          //   }, 5000)
-          // })
+          .catch(error => {
+            setPersons(persons.filter(person => person.id !== oldPerson.id))
+            setNewPerson({name: "", number: ""});
+            setMessage(
+              `Note '${persons.name}' was already removed from server`
+            )
+            setIsGood(false);
+            setTimeout(() => {
+              setMessage(null)
+            }, 5000)
+          })
       }
     } else {
       personService
