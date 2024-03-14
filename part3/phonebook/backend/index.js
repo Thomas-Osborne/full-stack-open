@@ -1,7 +1,6 @@
 require('dotenv').config();
 
 const express = require('express');
-const bodyParser = require('body-parser');
 const morgan=require('morgan');
 
 const app = express();
@@ -9,7 +8,7 @@ const app = express();
 const Person = require('./models/Person');
 
 app.use(express.static('dist'));
-app.use(bodyParser.json());
+app.use(express.json());
 
 const cors = require('cors')
 app.use(cors())
@@ -50,20 +49,13 @@ app.get('/api/persons', (req, res) => {
         .then(person => {
             res.json(person);
         })
-        .catch(error => {
-            console.error(error.message);
-            res.status(500).end();
-        })
 })
 
-app.get('/api/persons/:id', (req, res) => {
+app.get('/api/persons/:id', (req, res, next) => {
     const id = req.params.id;
     Person.findOne({ _id: id })
         .then(person => res.json(person))
-        .catch(error => {
-            console.error(error.message);
-            res.status(500).end();
-        })
+        .catch(error => next(error));
 })
 
 app.post('/api/persons', (req, res) => {
@@ -97,32 +89,40 @@ app.post('/api/persons', (req, res) => {
     })
 })
 
-app.put('/api/persons/:id', (req, res) => {
+app.put('/api/persons/:id', (req, res, next) => {
     const id = req.params.id;
     
     const body = req.body;
     Person.findOneAndUpdate({ _id: id }, {name: body.name, number: body.number}, {new: true}) // new means the updated document is returned 
         .then(person => res.json(person))
-        .catch(error => {
-            console.error(error.message);
-            res.status(500).end();
-        })
+        .catch(error => next(error));
 })
 
-app.delete('/api/persons/:id', (req, res) => {
+app.delete('/api/persons/:id', (req, res, next) => {
     const id = req.params.id;
-    Person.findOneAndDelete({ _id: id }, {name: body.name, number: body.number}, {new: true}) // new means the updated document is returned 
-        .then(person => res.json(person))
-        .catch(error => {
-            console.error(error.message);
-            res.status(500).end();
-        })
+
+    Person.findOneAndDelete({ _id: id }) // new means the updated document is returned 
+        .then(result => res.status(204).end())
+        .catch(error => next(error));
 })
 
 app.get('/info', (req, res) => {
     const time = new Date();
     res.send(`<p>Phonebook has info for ${persons.length} people</p><p>${time}</p>`)
 })
+
+const errorHandler = (error, request, response, next) => {
+    console.error(error.message)
+  
+    if (error.name === 'CastError') {
+      return response.status(400).send({ error: 'malformatted id' })
+    } 
+  
+    next(error)
+}
+  
+// this has to be the last loaded middleware, also all the routes should be registered before this!
+app.use(errorHandler);
 
 const PORT = process.env.PORT || 3001
 app.listen(PORT)
