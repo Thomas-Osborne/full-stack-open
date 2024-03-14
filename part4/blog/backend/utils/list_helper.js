@@ -43,9 +43,39 @@ const mostBlogs = (blogs) => {
   return object;
 };
 
+const mostLikes = (blogs) => {
+  if (blogs.length === 0) {
+    return null;
+  }
+
+  const kvp = {};
+
+  blogs.forEach(blog => {
+    if (!Object.hasOwnProperty.call(kvp, blog.author)) {
+      kvp[blog.author] = blog.likes;
+    } else {
+      kvp[blog.author] += blog.likes;
+    }
+  });
+
+  let mostBlogger = null;
+  let mostBloggerLikes = 0; // need this for the initial part of the loop or it stays null
+
+  for (const key in kvp) {
+    console.log(key);
+    if (kvp[key] > mostBloggerLikes) {
+      mostBlogger = key;
+      mostBloggerLikes = kvp[key];
+    }
+  }
+
+  return {author: mostBlogger, likes: mostBloggerLikes};
+};
+
 module.exports = {
   dummy,
   totalLikes,
   favoriteBlog,
-  mostBlogs
+  mostBlogs,
+  mostLikes
 };
