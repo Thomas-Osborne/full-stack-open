@@ -4,6 +4,11 @@ const morgan=require('morgan');
 
 const app = express();
 app.use(bodyParser.json());
+
+const cors = require('cors')
+
+app.use(cors())
+
 app.use(morgan('tiny'));
 
 morgan.token('object', (req, res) => `${JSON.stringify(req.body)}`);
@@ -73,9 +78,17 @@ app.post('/api/persons', (req, res) => {
     res.json(person);
 })
 
+app.put('/api/persons/:id', (req, res) => {
+    const id = parseInt(req.params.id);
+    const body = req.body;
+    const updatedPerson = {id: id, name: body.name, number: body.number};
+    persons = persons.map(person => person.id === id ? updatedPerson : person);
+
+    res.json(updatedPerson);
+})
+
 app.delete('/api/persons/:id', (req, res) => {
     const id = parseInt(req.params.id);
-    console.log(id);
     persons = persons.filter(person => person.id !== id);
 
     res.status(204).end()
