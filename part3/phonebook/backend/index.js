@@ -6,17 +6,7 @@ const morgan=require('morgan');
 
 const app = express();
 
-const mongoose = require('mongoose');
-
-mongoose.set('strictQuery', false);
-mongoose.connect(process.env.MONGO_URI);
-
-const personSchema = new mongoose.Schema({
-    name: String,
-    number: String,
-})
-
-const Person = mongoose.model('Person', personSchema);
+const Person = require('./models/Person');
 
 app.use(express.static('dist'));
 app.use(bodyParser.json());
@@ -94,12 +84,9 @@ app.post('/api/persons', (req, res) => {
         number: body.number
     })
   
-    person.save().then(result => {
-        console.log('person saved!')
-        mongoose.connection.close()
+    person.save().then(savedPerson => {
+        res.json(savedPerson);
     })
-
-    res.json(person);
 })
 
 app.put('/api/persons/:id', (req, res) => {
@@ -113,9 +100,9 @@ app.put('/api/persons/:id', (req, res) => {
 
 app.delete('/api/persons/:id', (req, res) => {
     const id = req.params.id;
-    persons = persons.filter(person => person.id !== id);
-
-    res.status(204).end()
+    Person.findOneAndDelete({ _id: id }, {name: body.name, number: body.number}, {new: true}) // new means the updated document is returned 
+        .then(person => res.json(person))
+        .catch(err => res.status(500).json({ error: err.message}));
 })
 
 app.get('/info', (req, res) => {
