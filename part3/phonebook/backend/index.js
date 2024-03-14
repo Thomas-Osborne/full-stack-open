@@ -1,19 +1,30 @@
+require('dotenv').config();
+
 const express = require('express');
 const bodyParser = require('body-parser');
 const morgan=require('morgan');
 
 const app = express();
 
-app.use(express.static('dist'));
+const mongoose = require('mongoose');
 
+mongoose.set('strictQuery', false);
+mongoose.connect(process.env.MONGO_URI);
+
+const personSchema = new mongoose.Schema({
+    name: String,
+    number: String,
+})
+
+const Person = mongoose.model('Person', personSchema);
+
+app.use(express.static('dist'));
 app.use(bodyParser.json());
 
 const cors = require('cors')
-
 app.use(cors())
 
 app.use(morgan('tiny'));
-
 morgan.token('object', (req, res) => `${JSON.stringify(req.body)}`);
 
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :object'))
@@ -45,53 +56,63 @@ app.get('/', (req, res) => {
 })
 
 app.get('/api/persons', (req, res) => {
-    res.json(persons);
+    Person.find({ })
+        .then(person => {
+            res.json(person);
+        })
 })
 
 app.get('/api/persons/:id', (req, res) => {
-    const id = parseInt(req.params.id);
-    const person = persons.find(person => person.id === id)
-    res.json(person)
+    const id = req.params.id;
+    Person.findOne({ _id: id })
+        .then(person => res.json(person));
 })
 
 app.post('/api/persons', (req, res) => {
-    if (!req.body) {
+    const body = req.body;
+
+    if (!body) {
         return res.status(400).json({ 
             error: 'body missing' 
         })
     }
 
-    if (!req.body.name || !req.body.number) {
+    if (!body.name || !body.number) {
         return res.status(400).json({
             error: 'need name and number'
         })
     }
 
-    if (persons.map(person => person.name.toLowerCase()).includes(req.body.name.toLowerCase())) {
+    if (persons.map(person => person.name.toLowerCase()).includes(body.name.toLowerCase())) {
         return res.status(400).json({
             error: 'name must be unique'
         })
     }
 
-    const randomId = Math.floor(Math.random() * 100000);
-    const person = {name: req.body.name, number: req.body.number, id: randomId};
-    
-    persons = persons.concat(person);
+    const person = new Person({
+        name: body.name,
+        number: body.number
+    })
+  
+    person.save().then(result => {
+        console.log('person saved!')
+        mongoose.connection.close()
+    })
 
     res.json(person);
 })
 
 app.put('/api/persons/:id', (req, res) => {
-    const id = parseInt(req.params.id);
+    const id = req.params.id;
+    
     const body = req.body;
-    const updatedPerson = {id: id, name: body.name, number: body.number};
-    persons = persons.map(person => person.id === id ? updatedPerson : person);
-
-    res.json(updatedPerson);
+    Person.findOneAndUpdate({ _id: id }, {name: body.name, number: body.number})
+        .then(person => res.json(person))
+        .catch(err => res.status(500).json({ error: err.message}));
 })
 
 app.delete('/api/persons/:id', (req, res) => {
-    const id = parseInt(req.params.id);
+    const id = req.params.id;
     persons = persons.filter(person => person.id !== id);
 
     res.status(204).end()

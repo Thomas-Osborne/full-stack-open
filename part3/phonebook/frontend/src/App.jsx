@@ -45,9 +45,9 @@ const App = () => {
       const oldPerson = persons.filter(person => person.name === newPerson.name)[0]; // is a unique entry
       if (confirm(`${newPerson.name} is already added to phonebook, replace the old number with a new one?`)) {
         personService
-          .update(oldPerson.id, newPerson)
+          .update(oldPerson._id, newPerson)
           .then(returnedPerson => {
-            setPersons(persons.map(person => person.id !== returnedPerson.id ? person : returnedPerson))
+            setPersons(persons.map(person => person._id !== returnedPerson._id ? person : returnedPerson))
             setNewPerson({name: "", number: ""});
             setMessage(`Updated ${returnedPerson.name}`)
             setIsGood(true);
@@ -56,7 +56,7 @@ const App = () => {
             }, 5000)
           })
           .catch(error => {
-            setPersons(persons.filter(person => person.id !== oldPerson.id))
+            setPersons(persons.filter(person => person._id !== oldPerson._id))
             setNewPerson({name: "", number: ""});
             setMessage(
               `Note '${persons.name}' was already removed from server`

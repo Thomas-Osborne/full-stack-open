@@ -14,7 +14,6 @@ const create = async newObject => {
 }
 
 const update = async (id, newObject) => {
-  console.log("Updating")
   const request = axios.put(`${baseUrl}/${id}`, newObject);
   const response = await request;
   return response.data;
