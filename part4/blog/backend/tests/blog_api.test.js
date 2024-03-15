@@ -112,6 +112,25 @@ describe('post /api/blogs', () => {
     assert.strictEqual(response.body.length, initialBlogs.length + 1); // check for increase number of blogs
     assert(titles.includes('My new blog')); // check blog is there
   });
+
+  test('likes set to zero if not provided', async () => {
+    const newBlog = {
+      title: 'My likeless blog',
+      author: 'Tom Osborne',
+      url: 'www.itv.com',
+    };
+
+    await api
+      .post('/api/blogs')
+      .send(newBlog)
+      .expect(201)
+      .expect('Content-Type', /application\/json/);
+
+    const response = await api.get('/api/blogs');
+    const addedBlog = response.body.filter(e => e.title === 'My likeless blog');
+    assert.strictEqual(response.body.length, initialBlogs.length + 1); // check for increase number of blogs
+    assert.strictEqual(addedBlog[0].likes, 0); // check added blog has zero likes
+  });
 });
 
 after(async () => {
