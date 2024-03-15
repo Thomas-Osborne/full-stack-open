@@ -3,10 +3,10 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
-    "dev": "nodemon index.js",
-    "lint": "eslint .",
-    "test": "node --test"
+    "start": "cross-env NODE_ENV=production node index.js",
+    "dev": "cross-env NODE_ENV=development nodemon index.js",
+    "test": "cross-env  NODE_ENV=test node --test",
+    "lint": "eslint ."
   },
   "dependencies": {
     "cors": "^2.8.5",
@@ -18,8 +18,10 @@
   },
   "devDependencies": {
     "@stylistic/eslint-plugin-js": "^1.7.0",
+    "cross-env": "^7.0.3",
     "eslint": "^8.57.0",
-    "eslint-plugin-react": "^7.34.0"
+    "eslint-plugin-react": "^7.34.0",
+    "supertest": "^6.3.4"
   },
   "keywords": [],
   "author": "",
