@@ -122,7 +122,9 @@ describe('post /api/blogs', () => {
     assert.strictEqual(response.body.length, initialBlogs.length + 1); // check for increase number of blogs
     assert(titles.includes('My new blog')); // check blog is there
   });
+});
 
+describe('post /api/blogs validation', () => {
   test('likes set to zero if not provided', async () => {
     const newBlog = {
       title: 'My likeless blog',
@@ -141,6 +143,43 @@ describe('post /api/blogs', () => {
     assert.strictEqual(response.body.length, initialBlogs.length + 1); // check for increase number of blogs
     assert.strictEqual(addedBlog[0].likes, 0); // check added blog has zero likes
   });
+
+  test('400 bad request if title not provided', async () => {
+    const newBlog = {
+      author: 'Tom Osborne',
+      url: 'www.google.com',
+      likes: 83
+    };
+
+    await api
+      .post('/api/blogs')
+      .send(newBlog)
+      .expect(400);
+  });
+
+  test('400 bad request if url not provided', async () => {
+    const newBlog = {
+      title: 'No url to see',
+      author: 'Tom Osborne',
+      likes: 30
+    };
+
+    await api
+      .post('/api/blogs')
+      .send(newBlog)
+      .expect(400);
+  });
+});
+
+test('400 bad request if neither title nor url not provided', async () => {
+  const newBlog = {
+    author: 'Tom Osborne',
+  };
+
+  await api
+    .post('/api/blogs')
+    .send(newBlog)
+    .expect(400);
 });
 
 after(async () => {

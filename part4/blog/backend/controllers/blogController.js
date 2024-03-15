@@ -9,6 +9,14 @@ blogsRouter.get('/', async (request, response) => {
 blogsRouter.post('/', async (request, response) => {
   const blog = new Blog(request.body);
 
+  if (typeof blog.likes === 'undefined') {
+    blog.likes = 0;
+  }
+
+  if (!blog.title || !blog.url) {
+    return response.status(400).end(); // bad request
+  }
+
   const newBlog = await blog.save();
   response.status(201).json(newBlog);
 });
