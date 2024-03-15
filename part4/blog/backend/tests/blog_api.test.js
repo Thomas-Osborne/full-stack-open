@@ -182,6 +182,38 @@ test('400 bad request if neither title nor url not provided', async () => {
     .expect(400);
 });
 
+describe('delete /api/blogs:id', () => {
+  test('delete blog successfully', async () => {
+    const initialId = '5a422b3a1b54a676234d17f9';
+    await api
+      .delete(`/api/blogs/${initialId}`)
+      .expect(204);
+
+    const response = await api.get('/api/blogs');
+    const deletedBlogId = response.body.filter(e => e.id === '5a422b3a1b54a676234d17f9');
+    assert.strictEqual(response.body.length, initialBlogs.length - 1); // check for decreased number of blogs
+    assert.strictEqual(deletedBlogId.length, 0); // check no blog left with that id
+  });
+});
+
+describe('update /api/blogs:id', () => {
+  test('update blog successfully', async () => {
+    const newLikes = {likes: 25};
+
+    const initialId = '5a422b3a1b54a676234d17f9';
+    await api
+      .patch(`/api/blogs/${initialId}`)
+      .send(newLikes)
+      .expect(201);
+
+    const response = await api.get('/api/blogs');
+    const updatedBlogId = response.body.filter(e => e.id === '5a422b3a1b54a676234d17f9');
+
+    assert.strictEqual(response.body.length, initialBlogs.length); // check for same number of blogs
+    assert.strictEqual(updatedBlogId[0].likes, 25); // check updated blog has 25 likes
+  });
+});
+
 after(async () => {
   await mongoose.connection.close();
 });
