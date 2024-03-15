@@ -92,6 +92,16 @@ describe('get /api/blogs', () => {
   });
 });
 
+describe('get /api/blogs id is unique identifier', () => {
+  test('blogs have an id field', async () => {
+    const response = await api.get('/api/blogs');
+
+    const ids = response.body.map(e => e.id);
+    const undefinedIds = ids.filter(id => !id); // finds falsy values, i.e. no id defined
+    assert.strictEqual(undefinedIds.length, 0);
+  });
+});
+
 describe('post /api/blogs', () => {
   test('a valid blog can be added', async () => {
     const newBlog = {
