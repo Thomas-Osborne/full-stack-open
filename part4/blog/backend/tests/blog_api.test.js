@@ -1,4 +1,4 @@
-const { test, after, beforeEach } = require('node:test');
+const { test, describe, after, beforeEach } = require('node:test');
 const Blog = require('../models/Blog');
 
 const assert = require('node:assert');
@@ -70,24 +70,48 @@ const app = require('../app');
 
 const api = supertest(app);
 
-test('blogs are returned as json', async () => {
-  await api
-    .get('/api/blogs')
-    .expect(200)
-    .expect('Content-Type', /application\/json/);
+describe('get /api/blogs', () => {
+  test('blogs are returned as json', async () => {
+    await api
+      .get('/api/blogs')
+      .expect(200)
+      .expect('Content-Type', /application\/json/);
+  });
+
+  test('there is one blog', async () => {
+    const response = await api.get('/api/blogs');
+
+    assert.strictEqual(response.body.length, initialBlogs.length);
+  });
+
+  test('the first blog is called react patterns', async () => {
+    const response = await api.get('/api/blogs');
+
+    const titles = response.body.map(e => e.title);
+    assert(titles.includes('React patterns'));
+  });
 });
 
-test('there is one blog', async () => {
-  const response = await api.get('/api/blogs');
+describe('post /api/blogs', () => {
+  test('a valid blog can be added', async () => {
+    const newBlog = {
+      title: 'My new blog',
+      author: 'Tom Osborne',
+      url: 'www.bbc.co.uk',
+      likes: 30
+    };
 
-  assert.strictEqual(response.body.length, initialBlogs.length);
-});
+    await api
+      .post('/api/blogs')
+      .send(newBlog)
+      .expect(201)
+      .expect('Content-Type', /application\/json/);
 
-test('the first blog is called react patterns', async () => {
-  const response = await api.get('/api/blogs');
-
-  const titles = response.body.map(e => e.title);
-  assert (titles.includes('React patterns'));
+    const response = await api.get('/api/blogs');
+    const titles = response.body.map(e => e.title);
+    assert.strictEqual(response.body.length, initialBlogs.length + 1); // check for increase number of blogs
+    assert(titles.includes('My new blog')); // check blog is there
+  });
 });
 
 after(async () => {
